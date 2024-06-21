@@ -3,17 +3,38 @@ interface Todo {
   id: string
   text: string
   done: boolean
+  priority: {
+    text: string,
+    level: number
+  },
+  label: string
 }
 
 interface ListStoreState {
   lists: Todo[]
-  newTodo: string
+  newTodo: string,
+  label: string,
+  priority: {
+    text: string,
+    level: number
+  },
+  emptyPriority: Boolean,
+  emptyLabel: Boolean,
+  error: Boolean
 }
 
 export const useListStore = defineStore('counter', {
   state: (): ListStoreState => ({
     lists: [],
-    newTodo: ''
+    newTodo: '',
+    priority: {
+      text: '',
+      level: 0
+    },
+    label: '',
+    emptyPriority: false,
+    emptyLabel: false,
+    error: false
   }),
   actions: {
     // since we rely on `this`, we cannot use an arrow function
@@ -35,19 +56,18 @@ export const useListStore = defineStore('counter', {
       localStorage.setItem('todoLists', serializedLists)
     },
     retrieveListsFromLocalStorage() {
-        try {
-            // Retrieve lists array and string from localStorage
-            const storedLists = localStorage.getItem('todoLists')
-            const todoText = localStorage.getItem('text')
-            if (storedLists) {
-                // Parse JSON string back to array of objects
-                this.lists = JSON.parse(storedLists)
-            }
-            if (todoText) {
-                this.newTodo = todoText
-            }
-        } catch {}
-      
+      try {
+        // Retrieve lists array and string from localStorage
+        const storedLists = localStorage.getItem('todoLists')
+        const todoText = localStorage.getItem('text')
+        if (storedLists) {
+          // Parse JSON string back to array of objects
+          this.lists = JSON.parse(storedLists)
+        }
+        if (todoText) {
+          this.newTodo = todoText
+        }
+      } catch {}
     },
     saveNewTodoBeforeRefresh(text: string) {
       // Save serialized lists to localStorage
